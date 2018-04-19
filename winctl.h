@@ -29,6 +29,7 @@ public:
         lua_register(lua_, "application", application);
         lua_register(lua_, "fullscreen", fullscreen);
         lua_register(lua_, "maximized", maximized);
+        lua_register(lua_, "minimized", minimized);
         lua_register(lua_, "pos", pos);
         lua_register(lua_, "rect", rect);
         lua_register(lua_, "title", title);
@@ -146,6 +147,7 @@ private:
     static int application(lua_State * lua);
     static int fullscreen(lua_State * lua);
     static int maximized(lua_State * lua);
+    static int minimized(lua_State * lua);
     static int pos(lua_State * lua);
     static int rect(lua_State * lua);
     static int title(lua_State * lua);

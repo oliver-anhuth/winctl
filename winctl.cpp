@@ -1,5 +1,7 @@
 #include "winctl.h"
 
+#include <sys/time.h>
+
 
 std::string WinCtl::dump_stack(lua_State * lua)
 {
@@ -65,6 +67,28 @@ int WinCtl::maximized(lua_State * lua)
     bool maximized = wnck_window_is_maximized(window);
 
     lua_pushboolean(lua, maximized);
+    return 1;
+}
+
+int WinCtl::minimized(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        bool set_minimized = lua_toboolean(lua, 1);
+        if (set_minimized) {
+            wnck_window_minimize(window);
+        } else {
+            timeval tv{0};
+            gettimeofday(&tv, nullptr);
+            wnck_window_unminimize(window, tv.tv_sec);
+        }
+    }
+
+    bool minimized = wnck_window_is_minimized(window);
+
+    lua_pushboolean(lua, minimized);
     return 1;
 }
 

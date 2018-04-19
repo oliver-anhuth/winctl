@@ -20,6 +20,6 @@ end
 if application() == "Xfce Terminal"
     and type() == "normal"
 then
-    fullscreen(false)
-    --rect(20.0, 5.0, 80.0, 80.0)
+    --minimized(true)
+    rect(20.0, 5.0, 80.0, 80.0)
 end
