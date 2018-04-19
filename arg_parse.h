@@ -100,7 +100,7 @@ struct ArgParse
         std::cout <<"\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages) \n"
             << "\n"
             << "SYNOPSIS\n"
-            << "\twinctl [options]... [script_files]\n"
+            << "\twinctl [options]... [script_file]...\n"
             << "\n"
             << "OPTIONS:\n"
             << "\t--once|-o\n"
