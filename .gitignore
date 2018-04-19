@@ -6,6 +6,7 @@ aur/
 
 # Prerequisites
 *.d
+*.dep
 
 # Compiled Object files
 *.slo
