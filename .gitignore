@@ -1,3 +1,9 @@
+winctl
+set-origins.sh
+
+# AUR
+aur/
+
 # Prerequisites
 *.d
 
