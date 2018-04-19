@@ -24,14 +24,6 @@ std::string WinCtl::dump_stack(lua_State * lua)
     return ss.str();
 }
 
-WnckWindow * WinCtl::get_window(lua_State * lua)
-{
-    lua_getglobal(lua, make_window_token().c_str());
-    WnckWindow * window = static_cast<WnckWindow *> (lua_touserdata(lua, -1));
-    lua_pop(lua, 1);
-    return window;
-}
-
 int WinCtl::application(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
@@ -93,16 +85,16 @@ int WinCtl::pos(lua_State * lua)
             window,
             WNCK_WINDOW_GRAVITY_STATIC,
             static_cast<WnckWindowMoveResizeMask> (mask),
-            x * screen_width / Scale,
-            y * screen_height / Scale,
+            x * screen_width / 100.0,
+            y * screen_height / 100.0,
             0, 0);
     }
 
     int x, y, width, height;
     wnck_window_get_geometry(window, &x, &y, &width, &height);
 
-    lua_pushnumber(lua, Scale * x / screen_width);
-    lua_pushnumber(lua, Scale * y / screen_height);
+    lua_pushnumber(lua, 100.0 * x / screen_width);
+    lua_pushnumber(lua, 100.0 * y / screen_height);
     return 2;
 }
 
@@ -125,19 +117,19 @@ int WinCtl::rect(lua_State * lua)
             window,
             WNCK_WINDOW_GRAVITY_STATIC,
             static_cast<WnckWindowMoveResizeMask> (mask),
-            x1 * screen_width / Scale,
-            y1 * screen_height / Scale,
-            (x2 - x1) * screen_width / Scale,
-            (y2 - y1) * screen_height / Scale);
+            x1 * screen_width / 100.0,
+            y1 * screen_height / 100.0,
+            (x2 - x1) * screen_width / 100.0,
+            (y2 - y1) * screen_height / 100.0);
     }
 
     int x, y, width, height;
     wnck_window_get_geometry(window, &x, &y, &width, &height);
 
-    lua_pushnumber(lua, Scale * x / screen_width);
-    lua_pushnumber(lua, Scale * y / screen_height);
-    lua_pushnumber(lua, Scale * (x + width) / screen_width);
-    lua_pushnumber(lua, Scale * (y + height) / screen_height);
+    lua_pushnumber(lua, 100.0 * x / screen_width);
+    lua_pushnumber(lua, 100.0 * y / screen_height);
+    lua_pushnumber(lua, 100.0 * (x + width) / screen_width);
+    lua_pushnumber(lua, 100.0 * (y + height) / screen_height);
     return 4;
 }
 

@@ -23,6 +23,9 @@ public:
         lua_ = luaL_newstate();
         luaL_openlibs(lua_);
 
+        lua_pushlightuserdata(lua_, this);
+        lua_setglobal(lua_, make_self_token());
+
         lua_register(lua_, "application", application);
         lua_register(lua_, "fullscreen", fullscreen);
         lua_register(lua_, "maximized", maximized);
@@ -72,7 +75,7 @@ public:
         for (GList * ptr = wnck_screen_get_windows(screen); ptr != nullptr; ptr = ptr->next)
         {
             WnckWindow * window = WNCK_WINDOW(ptr->data);
-            call(window);
+            call_chunks(window);
         }
     }
 
@@ -87,7 +90,18 @@ public:
     }
 
 private:
-    static constexpr const double Scale = 100.0;
+    static const char * make_self_token()
+    {
+        return "a2f7faddb923497aa4e9f11ea8ebef1d";
+    }
+
+    static const WinCtl & get_self(lua_State * lua)
+    {
+        lua_getglobal(lua, make_self_token());
+        WinCtl * self = static_cast<WinCtl *> (lua_touserdata(lua, -1));
+        lua_pop(lua, 1);
+        return *self;
+    }
 
     static std::string make_chunk_token(size_t n)
     {
@@ -96,15 +110,23 @@ private:
         return ss.str();
     }
 
-    static std::string make_window_token()
+    static const char * make_window_token()
     {
-        return std::string{"dcc6e74976d141ad8c134724df770a0c"};
+        return "dcc6e74976d141ad8c134724df770a0c";
     }
 
-    void call(WnckWindow * window)
+    static WnckWindow * get_window(lua_State * lua)
+    {
+        lua_getglobal(lua, make_window_token());
+        WnckWindow * window = static_cast<WnckWindow *> (lua_touserdata(lua, -1));
+        lua_pop(lua, 1);
+        return window;
+    }
+
+    void call_chunks(WnckWindow * window)
     {
         lua_pushlightuserdata(lua_, window);
-        lua_setglobal(lua_, make_window_token().c_str());
+        lua_setglobal(lua_, make_window_token());
 
         for (size_t i = 0; i < num_chunks_; ++i) {
             lua_getglobal(lua_, make_chunk_token(i).c_str());
@@ -118,7 +140,7 @@ private:
     static void on_window_opened(WnckScreen * screen, WnckWindow * window, gpointer data)
     {
         auto & self = *static_cast<WinCtl *> (data);
-        self.call(window);
+        self.call_chunks(window);
     }
 
     static int application(lua_State * lua);
@@ -130,7 +152,6 @@ private:
     static int type(lua_State * lua);
 
     static std::string dump_stack(lua_State * lua);
-    static WnckWindow * get_window(lua_State * lua);
 
     lua_State * lua_;
     size_t num_chunks_ = 0;
