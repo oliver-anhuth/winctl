@@ -78,6 +78,8 @@ public:
 
     void run()
     {
+        WnckScreen * screen = wnck_screen_get_default();
+        wnck_screen_force_update(screen);
         g_signal_connect(wnck_screen_get(0), "window-opened", G_CALLBACK(on_window_opened), this);
         GMainLoop * main_loop = g_main_loop_new(nullptr, false);
         g_main_loop_run(main_loop);

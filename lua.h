@@ -7,7 +7,6 @@ const char * LuaPrintNormalWindows = R"lua(
       return math.floor(x * m + 0.5) / m
     end
 
-    print()
     if type() == "normal" then
         print("if application() == \"".. application().. "\"")
         print("    and type() == \"".. type().. "\"")
@@ -29,7 +28,6 @@ const char * LuaPrintAllWindows = R"lua(
       return math.floor(x * m + 0.5) / m
     end
 
-    print()
     print("if application() == \"".. application().. "\"")
     print("    and type() == \"".. type().. "\"")
     print("then")

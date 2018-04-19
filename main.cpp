@@ -17,6 +17,11 @@ int main(int argc, char * argv[])
         gdk_init(&argc, &argv);
         ArgParse arg_parse{argc, argv};
 
+        if (arg_parse.print_help) {
+            std::cout << "print help" << std::endl;
+            ArgParse::print_usage_and_exit(EXIT_SUCCESS);
+        }
+
         WinCtl winctl;
         if (arg_parse.print_all_windows) {
             winctl.add_script(LuaPrintAllWindows);
@@ -26,8 +31,11 @@ int main(int argc, char * argv[])
             winctl.add_files(arg_parse.files);
         }
 
-        winctl.run_once();
-        if (!arg_parse.run_once) {
+        if (arg_parse.run_once) {
+            winctl.run_once();
+        }
+
+        if (arg_parse.run_continuous) {
             winctl.run();
         }
     } catch (const ArgParse::error &) {
