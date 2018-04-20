@@ -2,9 +2,9 @@
 
 
 const char * LuaPrintNormalWindows = R"lua(
-    function round(x, p)
-      local m = 10^(p or 0)
-      return math.floor(x * m + 0.5) / m
+    local function round(x, p)
+        local m = 10^(p or 0)
+        return math.floor(x * m + 0.5) / m
     end
 
     if type() == "normal" or type() == "dialog" then
@@ -23,9 +23,9 @@ const char * LuaPrintNormalWindows = R"lua(
 )lua";
 
 const char * LuaPrintAllWindows = R"lua(
-    function round(x, p)
-      local m = 10^(p or 0)
-      return math.floor(x * m + 0.5) / m
+    local function round(x, p)
+        local m = 10^(p or 0)
+        return math.floor(x * m + 0.5) / m
     end
 
     print("if application() == \"".. application().. "\"")

@@ -1,9 +1,9 @@
-function round(x, p)
-  local m = 10^(p or 0)
-  return math.floor(x * m + 0.5) / m
+local function round(x, p)
+    local m = 10^(p or 0)
+    return math.floor(x * m + 0.5) / m
 end
 
-if type() == "normal" then
+if type() == "normal" or type() == "dialog" then
     print("if application() == \"".. application().. "\"")
     print("    and type() == \"".. type().. "\"")
     print("then")
