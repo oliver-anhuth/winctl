@@ -36,6 +36,7 @@ public:
             "rect", rect,
             "title", title,
             "type", type,
+            nullptr, nullptr
         };
         luaL_newlib(lua_, window_functions);
         lua_setglobal(lua_, "window");
