@@ -20,6 +20,5 @@ end
 if window.application() == "Xfce Terminal"
     and window.type() == "normal"
 then
-    --window.minimized(true)
     window.rect(20.0, 5.0, 80.0, 80.0)
 end

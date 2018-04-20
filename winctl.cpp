@@ -26,11 +26,51 @@ std::string WinCtl::dump_stack(lua_State * lua)
     return ss.str();
 }
 
+int WinCtl::above(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        bool set_above = lua_toboolean(lua, 1);
+        if (set_above) {
+            wnck_window_make_above(window);
+        } else {
+            wnck_window_unmake_above(window);
+        }
+    }
+
+    bool maximized = wnck_window_is_above(window);
+
+    lua_pushboolean(lua, maximized);
+    return 1;
+}
+
 int WinCtl::application(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
 
     lua_pushstring(lua, wnck_application_get_name(wnck_window_get_application(window)));
+    return 1;
+}
+
+int WinCtl::below(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        bool set_below = lua_toboolean(lua, 1);
+        if (set_below) {
+            wnck_window_make_below(window);
+        } else {
+            wnck_window_unmake_below(window);
+        }
+    }
+
+    bool maximized = wnck_window_is_below(window);
+
+    lua_pushboolean(lua, maximized);
     return 1;
 }
 
@@ -92,6 +132,26 @@ int WinCtl::minimized(lua_State * lua)
     return 1;
 }
 
+int WinCtl::pinned(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        bool set_pinned = lua_toboolean(lua, 1);
+        if (set_pinned) {
+            wnck_window_pin(window);
+        } else {
+            wnck_window_unpin(window);
+        }
+    }
+
+    bool pinned = wnck_window_is_pinned(window);
+
+    lua_pushboolean(lua, pinned);
+    return 1;
+}
+
 int WinCtl::pos(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
@@ -120,6 +180,15 @@ int WinCtl::pos(lua_State * lua)
     lua_pushnumber(lua, 100.0 * x / screen_width);
     lua_pushnumber(lua, 100.0 * y / screen_height);
     return 2;
+}
+
+int WinCtl::role(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+    const char * role = wnck_window_get_role(window);
+
+    lua_pushstring(lua, role);
+    return 1;
 }
 
 int WinCtl::rect(lua_State * lua)
@@ -160,8 +229,9 @@ int WinCtl::rect(lua_State * lua)
 int WinCtl::title(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
+    const char * title = wnck_window_get_name(window);
 
-    lua_pushstring(lua, wnck_window_get_name(window));
+    lua_pushstring(lua, title);
     return 1;
 }
 

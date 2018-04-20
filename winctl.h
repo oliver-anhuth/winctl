@@ -8,9 +8,6 @@
 
 #include "lua.hpp"
 
-#include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE 1
 #include <libwnck/libwnck.h>
 
@@ -26,20 +23,7 @@ public:
         lua_pushlightuserdata(lua_, this);
         lua_setglobal(lua_, make_self_token());
 
-        static luaL_Reg window_functions[] =
-        {
-            "application", application,
-            "fullscreen", fullscreen,
-            "maximized", maximized,
-            "minimized", minimized,
-            "pos", pos,
-            "rect", rect,
-            "title", title,
-            "type", type,
-            nullptr, nullptr
-        };
-        luaL_newlib(lua_, window_functions);
-        lua_setglobal(lua_, "window");
+        register_window_functions();
     }
 
     ~WinCtl()
@@ -115,14 +99,6 @@ private:
         return "a2f7faddb923497aa4e9f11ea8ebef1d";
     }
 
-    static const WinCtl & get_self(lua_State * lua)
-    {
-        lua_getglobal(lua, make_self_token());
-        WinCtl * self = static_cast<WinCtl *> (lua_touserdata(lua, -1));
-        lua_pop(lua, 1);
-        return *self;
-    }
-
     static std::string make_chunk_token(size_t n)
     {
         std::stringstream ss;
@@ -133,6 +109,14 @@ private:
     static const char * make_window_token()
     {
         return "dcc6e74976d141ad8c134724df770a0c";
+    }
+
+    static const WinCtl & get_self(lua_State * lua)
+    {
+        lua_getglobal(lua, make_self_token());
+        WinCtl * self = static_cast<WinCtl *> (lua_touserdata(lua, -1));
+        lua_pop(lua, 1);
+        return *self;
     }
 
     static WnckWindow * get_window(lua_State * lua)
@@ -163,14 +147,40 @@ private:
         self.call_chunks(window);
     }
 
+    static int above(lua_State * lua);
     static int application(lua_State * lua);
+    static int below(lua_State * lua);
     static int fullscreen(lua_State * lua);
     static int maximized(lua_State * lua);
     static int minimized(lua_State * lua);
+    static int pinned(lua_State * lua);
     static int pos(lua_State * lua);
     static int rect(lua_State * lua);
+    static int role(lua_State * lua);
     static int title(lua_State * lua);
     static int type(lua_State * lua);
+
+    void register_window_functions()
+    {
+        static luaL_Reg window_functions[] =
+        {
+            "above", above,
+            "application", application,
+            "below", below,
+            "fullscreen", fullscreen,
+            "maximized", maximized,
+            "minimized", minimized,
+            "pinned", pinned,
+            "pos", pos,
+            "rect", rect,
+            "role", role,
+            "title", title,
+            "type", type,
+            nullptr, nullptr
+        };
+        luaL_newlib(lua_, window_functions);
+        lua_setglobal(lua_, "window");
+    }
 
     static std::string dump_stack(lua_State * lua);
 

@@ -2,6 +2,8 @@
 #include "lua.h"
 #include "winctl.h"
 
+#include <gdk/gdk.h>
+
 
 void print_error_and_exit(const char * msg, int status = EXIT_FAILURE)
 {
@@ -20,7 +22,7 @@ int main(int argc, char * argv[])
         if (arg_parse.print_help) {
             ArgParse::print_usage_and_exit(EXIT_SUCCESS);
         } else if (arg_parse.print_functions) {
-            WinCtl{}.run_script(LuaPrintWindowFunctions);
+            WinCtl{}.run_script(LuaPrintAvailableFunctions);
             std::exit(EXIT_SUCCESS);
         }
 

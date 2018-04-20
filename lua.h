@@ -41,7 +41,7 @@ const char * LuaPrintAllWindows = R"lua(
     print()
 )lua";
 
-const char * LuaPrintWindowFunctions = R"lua(
+const char * LuaPrintAvailableFunctions = R"lua(
     local names = {}
     local count = 0;
     for name, value in pairs(window) do
