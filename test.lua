@@ -3,26 +3,23 @@ local function round(x, p)
     return math.floor(x * m + 0.5) / m
 end
 
-local type = get_type()
-local application = get_application()
-
-if type == "normal" or type == "dialog" then
-    print("if get_application() == \"".. application.. "\"")
-    print("    and type == \"".. type.. "\"")
+if type() == "normal" or type() == "dialog" then
+    print("if application() == \"".. application().. "\"")
+    print("    and type() == \"".. type().. "\"")
     print("then")
-    if is_maximized() then
+    if maximized() then
         print("    maximized(true)")
     else
-        left, top, right, bottom = get_rect()
-        print("    rect(".. round(left, 1).. ", ".. round(top, 1).. ", ".. round(left, 1).. ", ".. round(bottom, 1).. ")")
+        x, y, w, h = rect()
+        print("    rect(".. round(x, 1).. ", ".. round(y, 1).. ", ".. round(w, 1).. ", ".. round(h, 1).. ")")
     end
     print("end")
     print()
 end
 
-if application == "Xfce Terminal"
-    and type == "normal"
+if application() == "Xfce Terminal"
+    and type() == "normal"
 then
     --minimized(true)
-    set_rect(20.0, 5.0, 80.0, 80.0)
+    rect(20.0, 5.0, 80.0, 80.0)
 end

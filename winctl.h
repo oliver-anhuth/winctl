@@ -14,8 +14,6 @@
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE 1
 #include <libwnck/libwnck.h>
 
-#include <sys/time.h>
-
 
 class WinCtl
 {
@@ -28,18 +26,14 @@ public:
         lua_pushlightuserdata(lua_, this);
         lua_setglobal(lua_, make_self_token());
 
-        lua_register(lua_, "get_application", get_application);
-        lua_register(lua_, "is_fullscreen", is_fullscreen);
-        lua_register(lua_, "set_fullscreen", set_fullscreen);
-        lua_register(lua_, "is_maximized", is_maximized);
-        lua_register(lua_, "set_maximized", set_maximized);
-        lua_register(lua_, "is_minimized", is_minimized);
-        lua_register(lua_, "get_pos", get_pos);
-        lua_register(lua_, "set_pos", set_pos);
-        lua_register(lua_, "get_rect", get_rect);
-        lua_register(lua_, "set_rect", set_rect);
-        lua_register(lua_, "get_title", get_title);
-        lua_register(lua_, "get_type", get_type);
+        lua_register(lua_, "application", application);
+        lua_register(lua_, "fullscreen", fullscreen);
+        lua_register(lua_, "maximized", maximized);
+        lua_register(lua_, "minimized", minimized);
+        lua_register(lua_, "pos", pos);
+        lua_register(lua_, "rect", rect);
+        lua_register(lua_, "title", title);
+        lua_register(lua_, "type", type);
     }
 
     ~WinCtl()
@@ -144,32 +138,20 @@ private:
         }
     }
 
-    static int make_timestamp()
-    {
-        timeval tv{0};
-        gettimeofday(&tv, nullptr);
-        return tv.tv_sec;
-    }
-
     static void on_window_opened(WnckScreen * screen, WnckWindow * window, gpointer data)
     {
         auto & self = *static_cast<WinCtl *> (data);
         self.call_chunks(window);
     }
 
-    static int get_application(lua_State * lua);
-    static int is_fullscreen(lua_State * lua);
-    static int set_fullscreen(lua_State * lua);
-    static int is_maximized(lua_State * lua);
-    static int set_maximized(lua_State * lua);
-    static int is_minimized(lua_State * lua);
-    static int set_minimized(lua_State * lua);
-    static int get_pos(lua_State * lua);
-    static int set_pos(lua_State * lua);
-    static int get_rect(lua_State * lua);
-    static int set_rect(lua_State * lua);
-    static int get_title(lua_State * lua);
-    static int get_type(lua_State * lua);
+    static int application(lua_State * lua);
+    static int fullscreen(lua_State * lua);
+    static int maximized(lua_State * lua);
+    static int minimized(lua_State * lua);
+    static int pos(lua_State * lua);
+    static int rect(lua_State * lua);
+    static int title(lua_State * lua);
+    static int type(lua_State * lua);
 
     static std::string dump_stack(lua_State * lua);
 

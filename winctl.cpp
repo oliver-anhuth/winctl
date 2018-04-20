@@ -1,5 +1,7 @@
 #include "winctl.h"
 
+#include <sys/time.h>
+
 
 std::string WinCtl::dump_stack(lua_State * lua)
 {
@@ -24,99 +26,93 @@ std::string WinCtl::dump_stack(lua_State * lua)
     return ss.str();
 }
 
-int WinCtl::get_application(lua_State * lua)
+int WinCtl::application(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
-    const char * application = wnck_application_get_name(wnck_window_get_application(window));
 
-    lua_pushstring(lua, application);
+    lua_pushstring(lua, wnck_application_get_name(wnck_window_get_application(window)));
     return 1;
 }
 
-int WinCtl::is_fullscreen(lua_State * lua)
+int WinCtl::fullscreen(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        bool set_fullscreen = lua_toboolean(lua, 1);
+        wnck_window_set_fullscreen(window, set_fullscreen);
+    }
+
     bool fullscreen = wnck_window_is_fullscreen(window);
 
     lua_pushboolean(lua, fullscreen);
     return 1;
 }
 
-int WinCtl::set_fullscreen(lua_State * lua)
+int WinCtl::maximized(lua_State * lua)
 {
-    bool set_fullscreen = true;
+    WnckWindow * window = get_window(lua);
+
     int top = lua_gettop(lua);
     if (top > 0) {
-        set_fullscreen = lua_toboolean(lua, 1);
+        bool set_maximized = lua_toboolean(lua, 1);
+        if (set_maximized) {
+            wnck_window_maximize(window);
+        } else {
+            wnck_window_unmaximize(window);
+        }
     }
 
-    WnckWindow * window = get_window(lua);
-    wnck_window_set_fullscreen(window, set_fullscreen);
-
-    return 0;
-}
-
-int WinCtl::is_maximized(lua_State * lua)
-{
-    WnckWindow * window = get_window(lua);
     bool maximized = wnck_window_is_maximized(window);
 
     lua_pushboolean(lua, maximized);
     return 1;
 }
 
-int WinCtl::set_maximized(lua_State * lua)
+int WinCtl::minimized(lua_State * lua)
 {
-    bool set_maximized = true;
+    WnckWindow * window = get_window(lua);
+
     int top = lua_gettop(lua);
     if (top > 0) {
-        set_maximized = lua_toboolean(lua, 1);
+        bool set_minimized = lua_toboolean(lua, 1);
+        if (set_minimized) {
+            wnck_window_minimize(window);
+        } else {
+            timeval tv{0};
+            gettimeofday(&tv, nullptr);
+            wnck_window_unminimize(window, tv.tv_sec);
+        }
     }
 
-    WnckWindow * window = get_window(lua);
-    if (set_maximized) {
-        wnck_window_maximize(window);
-    } else {
-        wnck_window_unmaximize(window);
-    }
-
-    return 0;
-}
-
-int WinCtl::is_minimized(lua_State * lua)
-{
-    WnckWindow * window = get_window(lua);
     bool minimized = wnck_window_is_minimized(window);
 
     lua_pushboolean(lua, minimized);
     return 1;
 }
 
-int WinCtl::set_minimized(lua_State * lua)
-{
-    bool set_minimized = true;
-    int top = lua_gettop(lua);
-    if (top > 0) {
-        set_minimized = lua_toboolean(lua, 1);
-    }
-
-    WnckWindow * window = get_window(lua);
-    if (set_minimized) {
-        wnck_window_minimize(window);
-    } else {
-        wnck_window_unminimize(window, make_timestamp());
-    }
-
-    return 0;
-}
-
-int WinCtl::get_pos(lua_State * lua)
+int WinCtl::pos(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
 
     WnckScreen * screen = wnck_window_get_screen(window);
     double screen_width = wnck_screen_get_width(screen);
     double screen_height = wnck_screen_get_height(screen);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        double x = luaL_checknumber(lua, 1);
+        double y = luaL_checknumber(lua, 2);
+        auto mask = WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y;
+        wnck_window_set_geometry(
+            window,
+            WNCK_WINDOW_GRAVITY_STATIC,
+            static_cast<WnckWindowMoveResizeMask> (mask),
+            x * screen_width / 100.0,
+            y * screen_height / 100.0,
+            0, 0);
+    }
 
     int x, y, width, height;
     wnck_window_get_geometry(window, &x, &y, &width, &height);
@@ -126,89 +122,54 @@ int WinCtl::get_pos(lua_State * lua)
     return 2;
 }
 
-int WinCtl::set_pos(lua_State * lua)
-{
-    double x = luaL_checknumber(lua, 1);
-    double y = luaL_checknumber(lua, 2);
-
-    WnckWindow * window = get_window(lua);
-
-    WnckScreen * screen = wnck_window_get_screen(window);
-    double screen_width = wnck_screen_get_width(screen);
-    double screen_height = wnck_screen_get_height(screen);
-
-    auto mask = WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y;
-    wnck_window_set_geometry(
-        window,
-        WNCK_WINDOW_GRAVITY_STATIC,
-        static_cast<WnckWindowMoveResizeMask> (mask),
-        x * screen_width / 100.0,
-        y * screen_height / 100.0,
-        0,
-        0);
-
-    return 0;
-}
-
-int WinCtl::get_rect(lua_State * lua)
+int WinCtl::rect(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
 
     WnckScreen * screen = wnck_window_get_screen(window);
     double screen_width = wnck_screen_get_width(screen);
     double screen_height = wnck_screen_get_height(screen);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        double x1 = luaL_checknumber(lua, 1);
+        double y1 = luaL_checknumber(lua, 2);
+        double x2 = luaL_checknumber(lua, 3);
+        double y2 = luaL_checknumber(lua, 4);
+        auto mask = WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT;
+        wnck_window_set_geometry(
+            window,
+            WNCK_WINDOW_GRAVITY_STATIC,
+            static_cast<WnckWindowMoveResizeMask> (mask),
+            x1 * screen_width / 100.0,
+            y1 * screen_height / 100.0,
+            (x2 - x1) * screen_width / 100.0,
+            (y2 - y1) * screen_height / 100.0);
+    }
 
     int x, y, width, height;
     wnck_window_get_geometry(window, &x, &y, &width, &height);
 
     lua_pushnumber(lua, 100.0 * x / screen_width);
     lua_pushnumber(lua, 100.0 * y / screen_height);
-    lua_pushnumber(lua, 100.0 * (x + width - 1.0) / screen_width);
-    lua_pushnumber(lua, 100.0 * (y + height - 1.0) / screen_height);
+    lua_pushnumber(lua, 100.0 * (x + width) / screen_width);
+    lua_pushnumber(lua, 100.0 * (y + height) / screen_height);
     return 4;
 }
 
-int WinCtl::set_rect(lua_State * lua)
-{
-    double left = luaL_checknumber(lua, 1);
-    double top = luaL_checknumber(lua, 2);
-    double right = luaL_checknumber(lua, 3);
-    double bottom = luaL_checknumber(lua, 4);
-
-    WnckWindow * window = get_window(lua);
-
-    WnckScreen * screen = wnck_window_get_screen(window);
-    double screen_width = wnck_screen_get_width(screen);
-    double screen_height = wnck_screen_get_height(screen);
-
-    auto mask = WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT;
-    wnck_window_set_geometry(
-        window,
-        WNCK_WINDOW_GRAVITY_STATIC,
-        static_cast<WnckWindowMoveResizeMask> (mask),
-        left * screen_width / 100.0,
-        top * screen_height / 100.0,
-        (right - left + 1.0) * screen_width / 100.0,
-        (bottom - top + 1.0) * screen_height / 100.0);
-
-    return 0;
-}
-
-int WinCtl::get_title(lua_State * lua)
+int WinCtl::title(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
-    const char * title = wnck_window_get_name(window);
 
-    lua_pushstring(lua, title);
+    lua_pushstring(lua, wnck_window_get_name(window));
     return 1;
 }
 
-int WinCtl::get_type(lua_State * lua)
+int WinCtl::type(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
-    WnckWindowType type = wnck_window_get_window_type(window);
 
-    switch (type) {
+    switch (wnck_window_get_window_type(window)) {
         case WNCK_WINDOW_DESKTOP:
             lua_pushstring(lua, "desktop");
             break;
