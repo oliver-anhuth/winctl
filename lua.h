@@ -7,15 +7,18 @@ const char * LuaPrintNormalWindows = R"lua(
         return math.floor(x * m + 0.5) / m
     end
 
-    if type() == "normal" or type() == "dialog" then
-        print("if application() == \"".. application().. "\"")
-        print("    and type() == \"".. type().. "\"")
+    local type = get_type()
+    local application = get_application()
+
+    if type == "normal" or type == "dialog" then
+        print("if get_application() == \"".. application.. "\"")
+        print("    and get_type() == \"".. type.. "\"")
         print("then")
-        if maximized() then
-            print("    maximized(true)")
+        if is_maximized() then
+            print("    maximize(true)")
         else
-            x, y, w, h = rect()
-            print("    rect(".. round(x, 1).. ", ".. round(y, 1).. ", ".. round(w, 1).. ", ".. round(h, 1).. ")")
+            left, top, right, bottom = get_rect()
+            print("    set_rect(".. round(left, 1).. ", ".. round(top, 1).. ", ".. round(left, 1).. ", ".. round(bottom, 1).. ")")
         end
         print("end")
         print()
@@ -28,14 +31,17 @@ const char * LuaPrintAllWindows = R"lua(
         return math.floor(x * m + 0.5) / m
     end
 
-    print("if application() == \"".. application().. "\"")
-    print("    and type() == \"".. type().. "\"")
+    local type = get_type()
+    local application = get_application()
+
+    print("if application() == \"".. application.. "\"")
+    print("    and type() == \"".. type.. "\"")
     print("then")
-    if maximized() then
-        print("    maximized(true)")
+    if is_maximized() then
+        print("    set_maximized(true)")
     else
-        x, y, w, h = rect()
-        print("    rect(".. round(x, 1).. ", ".. round(y, 1).. ", ".. round(w, 1).. ", ".. round(h, 1).. ")")
+        left, top, right, bottom = get_rect()
+        print("    set_rect(".. round(left, 1).. ", ".. round(top, 1).. ", ".. round(left, 1).. ", ".. round(bottom, 1).. ")")
     end
     print("end")
     print()
