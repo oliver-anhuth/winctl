@@ -3,23 +3,23 @@ local function round(x, p)
     return math.floor(x * m + 0.5) / m
 end
 
-if type() == "normal" or type() == "dialog" then
-    print("if application() == \"".. application().. "\"")
-    print("    and type() == \"".. type().. "\"")
+if window.type() == "normal" or window.type() == "dialog" then
+    print("if window.application() == \"".. window.application().. "\"")
+    print("    and window.type() == \"".. window.type().. "\"")
     print("then")
-    if maximized() then
-        print("    maximized(true)")
+    if window.maximized() then
+        print("    window.maximized(true)")
     else
-        x, y, w, h = rect()
-        print("    rect(".. round(x, 1).. ", ".. round(y, 1).. ", ".. round(w, 1).. ", ".. round(h, 1).. ")")
+        left, top, right, bottom = window.rect()
+        print("    window.rect(".. round(left, 1).. ", ".. round(top, 1).. ", ".. round(right, 1).. ", ".. round(bottom, 1).. ")")
     end
     print("end")
     print()
 end
 
-if application() == "Xfce Terminal"
-    and type() == "normal"
+if window.application() == "Xfce Terminal"
+    and window.type() == "normal"
 then
-    --minimized(true)
-    rect(20.0, 5.0, 80.0, 80.0)
+    --window.minimized(true)
+    window.rect(20.0, 5.0, 80.0, 80.0)
 end

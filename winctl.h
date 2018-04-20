@@ -26,14 +26,19 @@ public:
         lua_pushlightuserdata(lua_, this);
         lua_setglobal(lua_, make_self_token());
 
-        lua_register(lua_, "application", application);
-        lua_register(lua_, "fullscreen", fullscreen);
-        lua_register(lua_, "maximized", maximized);
-        lua_register(lua_, "minimized", minimized);
-        lua_register(lua_, "pos", pos);
-        lua_register(lua_, "rect", rect);
-        lua_register(lua_, "title", title);
-        lua_register(lua_, "type", type);
+        static luaL_Reg window_functions[] =
+        {
+            "application", application,
+            "fullscreen", fullscreen,
+            "maximized", maximized,
+            "minimized", minimized,
+            "pos", pos,
+            "rect", rect,
+            "title", title,
+            "type", type,
+        };
+        luaL_newlib(lua_, window_functions);
+        lua_setglobal(lua_, "window");
     }
 
     ~WinCtl()
