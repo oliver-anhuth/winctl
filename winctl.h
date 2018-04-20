@@ -96,6 +96,19 @@ public:
         g_main_loop_unref(main_loop);
     }
 
+    void run_script(const std::string & script)
+    {
+        int rc = luaL_loadstring(lua_, script.c_str());
+        if (rc != 0) {
+            throw std::runtime_error{lua_tostring(lua_, -1)};
+        }
+
+        rc = lua_pcall(lua_, 0, LUA_MULTRET, 0);
+        if (rc != 0) {
+            throw std::runtime_error{lua_tostring(lua_, -1)};
+        }
+    }
+
 private:
     static const char * make_self_token()
     {
@@ -138,7 +151,7 @@ private:
         for (size_t i = 0; i < num_chunks_; ++i) {
             lua_getglobal(lua_, make_chunk_token(i).c_str());
             int rc = lua_pcall(lua_, 0, LUA_MULTRET, 0);
-            if (rc) {
+            if (rc != 0) {
                 throw std::runtime_error{lua_tostring(lua_, -1)};
             }
         }

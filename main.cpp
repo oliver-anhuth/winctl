@@ -18,8 +18,10 @@ int main(int argc, char * argv[])
         ArgParse arg_parse{argc, argv};
 
         if (arg_parse.print_help) {
-            std::cout << "print help" << std::endl;
             ArgParse::print_usage_and_exit(EXIT_SUCCESS);
+        } else if (arg_parse.print_functions) {
+            WinCtl{}.run_script(LuaPrintWindowFunctions);
+            std::exit(EXIT_SUCCESS);
         }
 
         WinCtl winctl;

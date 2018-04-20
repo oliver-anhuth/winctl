@@ -8,20 +8,26 @@
 
 struct ArgParse
 {
-    bool print_help = false;
-    bool run_once = true;
-    bool run_continuous = true;
-    bool print_windows = false;
-    bool print_all_windows = false;
-    std::vector<std::string> files;
-
-    bool explicit_run_once = false;
-    bool explicit_run_continuous = false;
+    std::deque<std::string> args;
 
     struct error : public std::runtime_error
     {
         error(const char * msg) : std::runtime_error{msg} {}
     };
+
+    bool run_once = true;
+    bool run_continuous = true;
+
+    bool print = false;
+    bool print_help = false;
+    bool print_windows = false;
+    bool print_all_windows = false;
+    bool print_functions = false;
+
+    std::vector<std::string> files;
+
+    bool explicit_run_once = false;
+    bool explicit_run_continuous = false;
 
     void add_option(const std::string & long_opt, char short_opt)
     {
@@ -34,10 +40,13 @@ struct ArgParse
             run_once = false;
             explicit_run_continuous = true;
         } else if (long_opt == "--print" || short_opt == 'p') {
-            print_windows = true;
+            print_windows = print = true;
             run_continuous = false;
         } else if (long_opt == "--print-all" || short_opt == 'P') {
-            print_all_windows = true;
+            print_all_windows = print = true;
+            run_continuous = false;
+        } else if (long_opt == "--print-functions") {
+            print_functions = print = true;
             run_continuous = false;
         } else {
             throw error{"Unknown option"};
@@ -51,7 +60,7 @@ struct ArgParse
 
     void finalize()
     {
-        if (!print_help && !print_windows && !print_all_windows && files.empty()) {
+        if (!print && files.empty()) {
             throw error{"No files specified"};
         }
 
@@ -68,10 +77,16 @@ struct ArgParse
     }
 
     ArgParse(int argc, char * argv[])
+        : args{argv + 1, argv + argc}
     {
-        std::deque<std::string> args{argv + 1, argv + argc};
+        parse();
+    }
+
+    void parse()
+    {
         while (!args.empty()) {
-            const std::string & arg = args.front();
+            std::string arg = std::move(args.front());
+            args.pop_front();
 
             if (arg.empty()) {
                 throw error{"Empty argument"};
@@ -88,8 +103,6 @@ struct ArgParse
                     }
                 }
             }
-
-            args.pop_front();
         }
 
         finalize();
@@ -107,7 +120,8 @@ struct ArgParse
             << "\t\tRun once ande exit, unless --continous is specified\n"
             << "\n"
             << "\t--continuous|-c\n"
-            << "\t\tRun continously and match new windows. Do not match existing windows at startup unless --once is also specified\n"
+            << "\t\tRun continously and match newly opening windows.\n"
+            << "\t\tDo not match existing windows at startup unless --once is also specified\n"
             << "\n"
             << "\t--print|-p\n"
             << "\t\tPrint existing regular windows. Implies --once unless --continous is also specified\n"
@@ -115,8 +129,11 @@ struct ArgParse
             << "\t--print-all|-P\n"
             << "\t\tPrint all existing windows. Implies --once unless --continous is also specified\n"
             << "\n"
+            << "\t--print-functions\n"
+            << "\t\tPrint all Lua functions available for each window w and exit.\n"
+            << "\n"
             << "\t--help|-h\n"
-            << "\t\tPrint this help text\n"
+            << "\t\tPrint this help text and exit\n"
             << "\n"
             << "\n";
 
