@@ -4,7 +4,6 @@
 
 #include <gdk/gdk.h>
 
-
 void print_error_and_exit(const char * msg, int status = EXIT_FAILURE)
 {
     std::cerr << msg << std::endl;
