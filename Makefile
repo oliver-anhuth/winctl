@@ -3,6 +3,10 @@ SOURCES = main.cpp winctl.cpp
 TARGET = winctl
 
 # Check prerequisites
+ifeq ($(shell which ${CXX}),)
+$(error No C++ compiler found)
+endif
+
 ifeq ($(shell which pkg-config),)
 $(error No pkg-config found)
 endif
@@ -48,3 +52,6 @@ ${TARGET}: ${OBJS}
 
 clean:
 	-rm -f ${TARGET} *.o *.o.dep
+
+install:
+	install --mode u=rwx,g=rx,o=rx --preserve-timestamps ${TARGET} /usr/local/bin/${TARGET}
