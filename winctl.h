@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include <deque>
+#include <map>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -111,7 +112,7 @@ private:
         return "dcc6e74976d141ad8c134724df770a0c";
     }
 
-    static const WinCtl & get_self(lua_State * lua)
+    static WinCtl & get_self(lua_State * lua)
     {
         lua_getglobal(lua, make_self_token());
         WinCtl * self = static_cast<WinCtl *> (lua_touserdata(lua, -1));
@@ -184,6 +185,27 @@ private:
 
     static std::string dump_stack(lua_State * lua);
 
+    struct WorkArea
+    {
+        double left, top, right, bottom;
+        WorkArea(double l, double t, double r, double b) : left{l}, top{t}, right{r}, bottom{b} {}
+    };
+
+    const WorkArea & get_work_area(WnckScreen * screen)
+    {
+        int screen_number = wnck_screen_get_number(screen);
+        auto iter = work_areas_.find(screen_number);
+        if (iter == work_areas_.end())
+        {
+            WorkArea work_area = calculate_work_area(screen);
+            iter = work_areas_.insert(std::make_pair(screen_number, work_area)).first;
+        }
+        return iter->second;
+    }
+
+    WorkArea calculate_work_area(WnckScreen * screen);
+
     lua_State * lua_;
     size_t num_chunks_ = 0;
+    std::map<int, WorkArea> work_areas_;
 };

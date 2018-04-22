@@ -38,11 +38,12 @@ int WinCtl::above(lua_State * lua)
         } else {
             wnck_window_unmake_above(window);
         }
+        return 0;
     }
 
-    bool maximized = wnck_window_is_above(window);
+    bool above = wnck_window_is_above(window);
 
-    lua_pushboolean(lua, maximized);
+    lua_pushboolean(lua, above);
     return 1;
 }
 
@@ -66,11 +67,12 @@ int WinCtl::below(lua_State * lua)
         } else {
             wnck_window_unmake_below(window);
         }
+        return 0;
     }
 
-    bool maximized = wnck_window_is_below(window);
+    bool below = wnck_window_is_below(window);
 
-    lua_pushboolean(lua, maximized);
+    lua_pushboolean(lua, below);
     return 1;
 }
 
@@ -82,6 +84,7 @@ int WinCtl::fullscreen(lua_State * lua)
     if (top > 0) {
         bool set_fullscreen = lua_toboolean(lua, 1);
         wnck_window_set_fullscreen(window, set_fullscreen);
+        return 0;
     }
 
     bool fullscreen = wnck_window_is_fullscreen(window);
@@ -102,6 +105,7 @@ int WinCtl::maximized(lua_State * lua)
         } else {
             wnck_window_unmaximize(window);
         }
+        return 0;
     }
 
     bool maximized = wnck_window_is_maximized(window);
@@ -124,6 +128,7 @@ int WinCtl::minimized(lua_State * lua)
             gettimeofday(&tv, nullptr);
             wnck_window_unminimize(window, tv.tv_sec);
         }
+        return 0;
     }
 
     bool minimized = wnck_window_is_minimized(window);
@@ -144,6 +149,7 @@ int WinCtl::pinned(lua_State * lua)
         } else {
             wnck_window_unpin(window);
         }
+        return 0;
     }
 
     bool pinned = wnck_window_is_pinned(window);
@@ -156,9 +162,9 @@ int WinCtl::pos(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
 
+    WinCtl & self = get_self(lua);
     WnckScreen * screen = wnck_window_get_screen(window);
-    double screen_width = wnck_screen_get_width(screen);
-    double screen_height = wnck_screen_get_height(screen);
+    const WorkArea & work_area = self.get_work_area(screen);
 
     int top = lua_gettop(lua);
     if (top > 0) {
@@ -169,16 +175,17 @@ int WinCtl::pos(lua_State * lua)
             window,
             WNCK_WINDOW_GRAVITY_STATIC,
             static_cast<WnckWindowMoveResizeMask> (mask),
-            x * screen_width / 100.0,
-            y * screen_height / 100.0,
+            work_area.left + x * (work_area.right - work_area.left) / 100.0,
+            work_area.top + y * (work_area.bottom - work_area.top) / 100.0,
             0, 0);
+        return 0;
     }
 
     int x, y, width, height;
     wnck_window_get_geometry(window, &x, &y, &width, &height);
 
-    lua_pushnumber(lua, 100.0 * x / screen_width);
-    lua_pushnumber(lua, 100.0 * y / screen_height);
+    lua_pushnumber(lua, 100.0 * (x - work_area.left) / (work_area.right - work_area.left));
+    lua_pushnumber(lua, 100.0 * (y - work_area.top) / (work_area.bottom - work_area.top));
     return 2;
 }
 
@@ -195,34 +202,35 @@ int WinCtl::rect(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
 
+    WinCtl & self = get_self(lua);
     WnckScreen * screen = wnck_window_get_screen(window);
-    double screen_width = wnck_screen_get_width(screen);
-    double screen_height = wnck_screen_get_height(screen);
+    const WorkArea & work_area = self.get_work_area(screen);
 
     int top = lua_gettop(lua);
     if (top > 0) {
-        double x1 = luaL_checknumber(lua, 1);
-        double y1 = luaL_checknumber(lua, 2);
-        double x2 = luaL_checknumber(lua, 3);
-        double y2 = luaL_checknumber(lua, 4);
+        double left = luaL_checknumber(lua, 1);
+        double top = luaL_checknumber(lua, 2);
+        double right = luaL_checknumber(lua, 3);
+        double bottom = luaL_checknumber(lua, 4);
         auto mask = WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT;
         wnck_window_set_geometry(
             window,
             WNCK_WINDOW_GRAVITY_STATIC,
             static_cast<WnckWindowMoveResizeMask> (mask),
-            x1 * screen_width / 100.0,
-            y1 * screen_height / 100.0,
-            (x2 - x1) * screen_width / 100.0,
-            (y2 - y1) * screen_height / 100.0);
+            work_area.left + left * (work_area.right - work_area.left) / 100.0,
+            work_area.top + top * (work_area.bottom - work_area.top) / 100.0,
+            (right - left) * (work_area.right - work_area.left + 1) / 100.0,
+            (bottom - top) * (work_area.bottom - work_area.top) / 100.0);
+        return 0;
     }
 
     int x, y, width, height;
     wnck_window_get_geometry(window, &x, &y, &width, &height);
 
-    lua_pushnumber(lua, 100.0 * x / screen_width);
-    lua_pushnumber(lua, 100.0 * y / screen_height);
-    lua_pushnumber(lua, 100.0 * (x + width) / screen_width);
-    lua_pushnumber(lua, 100.0 * (y + height) / screen_height);
+    lua_pushnumber(lua, 100.0 * (x - work_area.left) / (work_area.right - work_area.left));
+    lua_pushnumber(lua, 100.0 * (y - work_area.top) / (work_area.bottom - work_area.top));
+    lua_pushnumber(lua, 100.0 * (x + width - 1 - work_area.left) / (work_area.right - work_area.left));
+    lua_pushnumber(lua, 100.0 * (y + height - 1 - work_area.top) / (work_area.bottom - work_area.top));
     return 4;
 }
 
@@ -269,4 +277,52 @@ int WinCtl::type(lua_State * lua)
             break;
     }
     return 1;
+}
+
+WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
+{
+    int left = 0;
+    int top = 0;
+    int right = wnck_screen_get_width(screen) - 1;
+    int bottom = wnck_screen_get_height(screen) - 1;
+
+    bool finished = false;
+    while (!finished) {
+        finished = true;
+        for (GList * ptr = wnck_screen_get_windows(screen); ptr != nullptr; ptr = ptr->next)
+        {
+            WnckWindow * window = WNCK_WINDOW(ptr->data);
+            int type = wnck_window_get_window_type(window);
+            if (type == WNCK_WINDOW_DOCK) {
+                int x1, y1, width, height;
+                wnck_window_get_geometry(window, &x1, &y1, &width, &height);
+                int x2 = x1 + width - 1;
+                int y2 = y1 + height - 1;
+
+                if (width >= height) {
+                    if (y1 <= top && top <= y2) {
+                        top = y2 + 1;
+                        finished = false;
+                    } else if (y1 <= bottom && bottom <= x2) {
+                        bottom = y1 - 1;
+                        finished = false;
+                    }
+                } else {
+                    if (x1 <= left && left <= x2) {
+                        left = x2 + 1;
+                        finished = false;
+                    } else if (x1 <= right && right <= x2) {
+                        right = x1 - 1;
+                        finished = false;
+                    }
+                }
+            }
+        }
+    }
+
+    return WorkArea{
+        static_cast<double> (left),
+        static_cast<double> (top),
+        static_cast<double> (right),
+        static_cast<double> (bottom)};
 }

@@ -17,8 +17,9 @@ if window.type() == "normal" or window.type() == "dialog" then
     print()
 end
 
-if window.application() == "Xfce Terminal"
+if window.application() == "Mousepad"
     and window.type() == "normal"
 then
-    window.rect(20.0, 5.0, 80.0, 80.0)
+    --window.rect(20.0, 5.0, 80.0, 80.0)
+    window.rect(10, 10, 90, 90)
 end
