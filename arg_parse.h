@@ -39,13 +39,13 @@ struct ArgParse
         } else if (long_opt == "--continuous" || short_opt == 'c') {
             run_once = false;
             explicit_run_continuous = true;
-        } else if (long_opt == "--print" || short_opt == 'p') {
+        } else if (long_opt == "--print-windows" || short_opt == 'p') {
             print_windows = print = true;
             run_continuous = false;
-        } else if (long_opt == "--print-all" || short_opt == 'P') {
+        } else if (long_opt == "--print-all-windows" || short_opt == 'P') {
             print_all_windows = print = true;
             run_continuous = false;
-        } else if (long_opt == "--print-functions") {
+        } else if (long_opt == "--print-window-functions") {
             print_functions = print = true;
             run_continuous = false;
         } else {
@@ -123,13 +123,13 @@ struct ArgParse
             << "\t\tRun continously and match newly opening windows.\n"
             << "\t\tDo not match existing windows at startup unless --once is also specified\n"
             << "\n"
-            << "\t--print|-p\n"
+            << "\t--print-windows|-p\n"
             << "\t\tPrint normal and dialog windows. Implies --once unless --continous is also specified\n"
             << "\n"
-            << "\t--print-all|-P\n"
+            << "\t--print-all-windows|-P\n"
             << "\t\tPrint all windows. Implies --once unless --continous is also specified\n"
             << "\n"
-            << "\t--print-functions\n"
+            << "\t--print-window-functions\n"
             << "\t\tPrint all Lua functions available for each window w and exit.\n"
             << "\n"
             << "\t--help|-h\n"
