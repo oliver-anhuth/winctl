@@ -1,4 +1,8 @@
+#ifndef INCLUDED_56D24949_9B62_4500_9230_AA56076D5B4B
+#define INCLUDED_56D24949_9B62_4500_9230_AA56076D5B4B
+
 #include <iostream>
+
 #include <stdexcept>
 
 #include <deque>
@@ -146,3 +150,5 @@ struct ArgParse
         std::exit(status);
     };
 };
+
+#endif // INCLUDED_56D24949_9B62_4500_9230_AA56076D5B4B#include <iostream>

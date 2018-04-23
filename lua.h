@@ -1,3 +1,6 @@
+#ifndef INCLUDED_F18555B8_0EA7_4FFF_87E5_02A626D15942
+#define INCLUDED_F18555B8_0EA7_4FFF_87E5_02A626D15942
+
 #include "lua.hpp"
 
 #if !defined(LUA_VERSION_NUM) || (LUA_VERSION_NUM < 502)
@@ -73,3 +76,5 @@ const char * LuaPrintAvailableFunctions = R"lua(
         print("\t".. name)
     end
 )lua";
+
+#endif // INCLUDED_F18555B8_0EA7_4FFF_87E5_02A626D15942

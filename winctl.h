@@ -1,3 +1,6 @@
+#ifndef INCLUDED_0C5D6352_8F57_43C5_93B6_CF2408A5B072
+#define INCLUDED_0C5D6352_8F57_43C5_93B6_CF2408A5B072
+
 #include <iostream>
 #include <stdexcept>
 
@@ -209,3 +212,5 @@ private:
     size_t num_chunks_ = 0;
     std::map<int, WorkArea> work_areas_;
 };
+
+#endif // INCLUDED_0C5D6352_8F57_43C5_93B6_CF2408A5B072
