@@ -1,5 +1,5 @@
 
-SOURCES = main.cpp winctl.cpp
+SOURCES = main.cpp logger.cpp winctl.cpp
 TARGET = winctl
 
 # Check prerequisites

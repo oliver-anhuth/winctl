@@ -1,15 +1,10 @@
 #include "arg_parse.h"
+#include "logger.h"
 #include "lua.h"
 #include "winctl.h"
 
 #include <gdk/gdk.h>
 
-
-void print_error_and_exit(const char * msg, int status = EXIT_FAILURE)
-{
-    std::cerr << msg << std::endl;
-    std::exit(status);
-};
 
 int main(int argc, char * argv[])
 {
@@ -19,7 +14,7 @@ int main(int argc, char * argv[])
         ArgParse arg_parse{argc, argv};
 
         if (arg_parse.print_help) {
-            ArgParse::print_usage_and_exit(EXIT_SUCCESS);
+            ArgParse::print_usage_and_exit();
         } else if (arg_parse.print_functions) {
             WinCtl{}.run_script(LuaPrintAvailableFunctions);
             std::exit(EXIT_SUCCESS);
@@ -30,7 +25,8 @@ int main(int argc, char * argv[])
             winctl.add_script(LuaPrintAllWindows);
         } else if (arg_parse.print_windows) {
             winctl.add_script(LuaPrintNormalWindows);
-        } else {
+        }
+        if (!arg_parse.files.empty()) {
             winctl.add_files(arg_parse.files);
         }
 
@@ -41,9 +37,11 @@ int main(int argc, char * argv[])
         if (arg_parse.run_continuous) {
             winctl.run();
         }
-    } catch (const ArgParse::error &) {
-        ArgParse::print_usage_and_exit();
+    } catch (const ArgParse::error & e) {
+        LOG_ERROR("winctl: " << e.what() << ".\n" << "Try 'winctl --help' for more information.");
+        std::exit(EXIT_FAILURE);
     } catch (const std::runtime_error & e) {
-        print_error_and_exit(e.what());
+        LOG_ERROR(e.what());
+        std::exit(EXIT_FAILURE);
     }
 }

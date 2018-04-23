@@ -1,6 +1,8 @@
 #ifndef INCLUDED_56D24949_9B62_4500_9230_AA56076D5B4B
 #define INCLUDED_56D24949_9B62_4500_9230_AA56076D5B4B
 
+#include "logger.h"
+
 #include <iostream>
 
 #include <stdexcept>
@@ -45,15 +47,38 @@ struct ArgParse
             print_all_windows = print = true;
             run_continuous = false;
             ++short_opts;
-        } else if (long_opt == "--print-window-functions" || (short_opt == 'p' && *short_opts == 'f')) {
+        } else if (long_opt == "--print-window-functions" || (short_opt == 'p' && *short_opts == 'f' && ++short_opts)) {
             print_functions = print = true;
             run_continuous = false;
-            ++short_opts;
         } else if (long_opt == "--print-windows" || short_opt == 'p') {
             print_windows = print = true;
             run_continuous = false;
+        } else if (long_opt == "--log-level" || (short_opt == 'l' && *short_opts == 'l' && ++short_opts)) {
+            if (args.empty()) {
+                throw error{"Missing log level"};
+            } else if (args.front() == "nothing") {
+                Logger::instance().set_log_level(Logger::Nothing);
+            } else if (args.front() == "error") {
+                Logger::instance().set_log_level(Logger::Error);
+            } else if (args.front() == "warning") {
+                Logger::instance().set_log_level(Logger::Warning);
+            } else if (args.front() == "info") {
+                Logger::instance().set_log_level(Logger::Info);
+            } else if (args.front() == "debug") {
+                Logger::instance().set_log_level(Logger::Debug);
+            } else {
+                throw error{"Unknown log level"};
+            }
+            args.pop_front();
         } else {
-            throw error{"Unknown option"};
+            std::string msg{"Unknown option "};
+            if (!long_opt.empty()) {
+                msg.append(long_opt);
+            } else {
+                msg.append("-");
+                msg.push_back(short_opt);
+            }
+            throw error{msg.c_str()};
         }
     }
 
@@ -118,7 +143,7 @@ struct ArgParse
         finalize();
     }
 
-    static void print_usage_and_exit(int status = EXIT_FAILURE)
+    static void print_usage_and_exit()
     {
         std::cout <<"\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages) \n"
             << "\n"
@@ -147,7 +172,7 @@ struct ArgParse
             << "\n"
             << "\n";
 
-        std::exit(status);
+        std::exit(EXIT_SUCCESS);
     };
 };
 
