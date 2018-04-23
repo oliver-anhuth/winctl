@@ -15,33 +15,6 @@
 
 struct ArgParse
 {
-    struct error : public std::runtime_error
-    {
-        explicit error(const char * msg) : std::runtime_error{msg} {}
-        explicit error(const std::string & msg) : std::runtime_error{msg} {}
-    };
-
-    template <typename... ARGS>
-    void throw_error(ARGS... args)
-    {
-        std::stringstream ss;
-        throw_error(ss, args...);
-    }
-
-    template <typename ARG, typename... ARGS>
-    void throw_error(std::stringstream & ss, const ARG & arg, ARGS... args)
-    {
-        ss << arg;
-        throw_error(ss, args...);
-    }
-
-    template <typename ARG>
-    void throw_error(std::stringstream & ss, const ARG & arg)
-    {
-        ss << arg;
-        throw error{ss.str()};
-    }
-
     bool run_once = true;
     bool run_continuous = true;
 
@@ -66,7 +39,9 @@ struct ArgParse
             // Run continously after startup
             run_once = false;
             explicit_run_continuous = true;
-        } else if (long_opt == "--print-all-windows" || (short_opt == 'p' && *short_opts == 'a')) {
+        }
+
+        else if (long_opt == "--print-all-windows" || (short_opt == 'p' && *short_opts == 'a')) {
             // Print all windows (normal, dialog and others)
             print_all_windows = print = true;
             run_continuous = false;
@@ -75,7 +50,9 @@ struct ArgParse
             // Print normal and dialog windows
             print_windows = print = true;
             run_continuous = false;
-        } else if (long_opt == "--log-level" || (short_opt == 'l' && *short_opts == 'l' && ++short_opts)) {
+        }
+
+        else if (long_opt == "--log-level" || (short_opt == 'l' && *short_opts == 'l' && ++short_opts)) {
             // Set log level
             if (args.empty()) {
                 throw_error("Missing log level");
@@ -93,14 +70,18 @@ struct ArgParse
                 throw_error("Unknown log level ", args.front());
             }
             args.pop_front();
-        } else if (long_opt == "--help-functions" || (short_opt == 'h' && *short_opts == 'f' && ++short_opts)) {
+        }
+
+        else if (long_opt == "--help-functions" || (short_opt == 'h' && *short_opts == 'f' && ++short_opts)) {
             // Print available Lua functions and exit
             print_functions = print = true;
             run_continuous = false;
         } else if (long_opt == "--help" || short_opt == 'h') {
             // Print help and exit
-            print_help = true;
-        } else {
+            print_help = print = true;
+        }
+
+        else {
             if (!long_opt.empty()) {
                 throw_error("Unknown option ", long_opt);
             } else {
@@ -170,9 +151,36 @@ struct ArgParse
         finalize();
     }
 
+    struct error : public std::runtime_error
+    {
+        explicit error(const char * msg) : std::runtime_error{msg} {}
+        explicit error(const std::string & msg) : std::runtime_error{msg} {}
+    };
+
+    template <typename... ARGS>
+    void throw_error(ARGS... args)
+    {
+        std::stringstream ss;
+        throw_error(ss, args...);
+    }
+
+    template <typename ARG, typename... ARGS>
+    void throw_error(std::stringstream & ss, const ARG & arg, ARGS... args)
+    {
+        ss << arg;
+        throw_error(ss, args...);
+    }
+
+    template <typename ARG>
+    void throw_error(std::stringstream & ss, const ARG & arg)
+    {
+        ss << arg;
+        throw error{ss.str()};
+    }
+
     static void print_usage_and_exit()
     {
-        std::cout <<"\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages) \n"
+        std::cout <<"\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages)\n"
             << "\n"
             << "SYNOPSIS\n"
             << "\twinctl [options]... [script_file]...\n"
