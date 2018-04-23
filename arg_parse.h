@@ -206,7 +206,6 @@ struct ArgParse
             << "\t\tPrint Lua functions available for each window and exit.\n"
             << "\n"
             << "\n";
-
         std::exit(EXIT_SUCCESS);
     };
 };

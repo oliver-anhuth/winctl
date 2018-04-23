@@ -108,10 +108,10 @@ public:
 
     static void print_functions_and_exit()
     {
-        std::cout <<"\tLua functions available for each window (e.g. window.maximized(), window.fullscreen(true))\n"
+        std::cout <<"\tLua functions available for each window (e.g. window.title() or window.fullscreen(true)).\n"
             << "\n"
             << "above:\n"
-            << "\tIs/Set window above other windows.\n"
+            << "\tIs/Set window above other windows (above(), above(true) or above(false)).\n"
             << "\n"
             << "application:\n"
             << "\tGet application of the window.\n"
@@ -123,20 +123,20 @@ public:
             << "\tIs/Set window fullscreen.\n"
             << "\n"
             << "maximized:\n"
-            << "\tIs/Set window maximized\n"
+            << "\tIs/Set window maximized.\n"
             << "\n"
             << "minimized:\n"
-            << "\tIs/Set window minimized\n"
+            << "\tIs/Set window minimized.\n"
             << "\n"
             << "pinned:\n"
-            << "\tIs/Set window visible on all workspaces\n"
+            << "\tIs/Set window visible on all workspaces.\n"
             << "\n"
             << "pos:\n"
-            << "\tGet/Set window position (pos()/pos(x, y))\n"
+            << "\tGet/Set window position (pos() or pos(x, y)).\n"
             << "\tWindow positions are specified in percentages of the work area.\n"
             << "\n"
             << "rect:\n"
-            << "\tGet/Set window rectangle (rect()/rect(x0, y0, x1, y1)) in percentages of the work area.\n"
+            << "\tGet/Set window rectangle (rect() or rect(x0, y0, x1, y1)).\n"
             << "\tWindow positions are specified in percentages of the work area.\n"
             << "\n"
             << "role:\n"
@@ -148,7 +148,6 @@ public:
             << "type:\n"
             << "\tGet window type as string.\n"
             << "\n";
-
         std::exit(EXIT_SUCCESS);
     };
 
