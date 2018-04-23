@@ -68,7 +68,7 @@ const char * LuaPrintAvailableFunctions = R"lua(
     end
     table.sort(names)
 
-    print("Available functions for each window w (e.g. w.".. names[1].. "()):")
+    print("Available functions for each window w (e.g. window.".. names[1].. "()):")
     for k, name in pairs(names) do
         print("\t".. name)
     end
