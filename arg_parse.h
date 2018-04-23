@@ -8,8 +8,6 @@
 
 struct ArgParse
 {
-    std::deque<std::string> args;
-
     struct error : public std::runtime_error
     {
         error(const char * msg) : std::runtime_error{msg} {}
@@ -77,13 +75,14 @@ struct ArgParse
     }
 
     ArgParse(int argc, char * argv[])
-        : args{argv + 1, argv + argc}
     {
-        parse();
+        parse(argc, argv);
     }
 
-    void parse()
+    void parse(int argc, char * argv[])
     {
+        std::deque<std::string> args{argv + 1, argv + argc};
+
         while (!args.empty()) {
             std::string arg = std::move(args.front());
             args.pop_front();

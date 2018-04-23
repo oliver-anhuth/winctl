@@ -4,12 +4,12 @@
 
 #include <gdk/gdk.h>
 
+
 void print_error_and_exit(const char * msg, int status = EXIT_FAILURE)
 {
     std::cerr << msg << std::endl;
     std::exit(status);
 };
-
 
 int main(int argc, char * argv[])
 {
