@@ -4,6 +4,7 @@
 #include "logger.h"
 
 #include <iostream>
+#include <sstream>
 
 #include <stdexcept>
 
@@ -16,17 +17,39 @@ struct ArgParse
 {
     struct error : public std::runtime_error
     {
-        error(const char * msg) : std::runtime_error{msg} {}
+        explicit error(const char * msg) : std::runtime_error{msg} {}
+        explicit error(const std::string & msg) : std::runtime_error{msg} {}
     };
+
+    template <typename... ARGS>
+    void throw_error(ARGS... args)
+    {
+        std::stringstream ss;
+        throw_error(ss, args...);
+    }
+
+    template <typename ARG, typename... ARGS>
+    void throw_error(std::stringstream & ss, const ARG & arg, ARGS... args)
+    {
+        ss << arg;
+        throw_error(ss, args...);
+    }
+
+    template <typename ARG>
+    void throw_error(std::stringstream & ss, const ARG & arg)
+    {
+        ss << arg;
+        throw error{ss.str()};
+    }
 
     bool run_once = true;
     bool run_continuous = true;
 
     bool print = false;
     bool print_help = false;
+    bool print_functions = false;
     bool print_windows = false;
     bool print_all_windows = false;
-    bool print_functions = false;
 
     std::vector<std::string> files;
 
@@ -35,27 +58,27 @@ struct ArgParse
 
     void add_option(const std::string & long_opt, char short_opt, std::deque<std::string> & args, const char *& short_opts)
     {
-        if (long_opt == "--help" || short_opt == 'h') {
-            print_help = true;
-        } else if (long_opt == "--once" || short_opt == 'o') {
+        if (long_opt == "--once" || short_opt == 'o') {
+            // Run once at startup
             run_continuous = false;
             explicit_run_once = true;
         } else if (long_opt == "--continuous" || short_opt == 'c') {
+            // Run continously after startup
             run_once = false;
             explicit_run_continuous = true;
         } else if (long_opt == "--print-all-windows" || (short_opt == 'p' && *short_opts == 'a')) {
+            // Print all windows (normal, dialog and others)
             print_all_windows = print = true;
             run_continuous = false;
             ++short_opts;
-        } else if (long_opt == "--print-window-functions" || (short_opt == 'p' && *short_opts == 'f' && ++short_opts)) {
-            print_functions = print = true;
-            run_continuous = false;
         } else if (long_opt == "--print-windows" || short_opt == 'p') {
+            // Print normal and dialog windows
             print_windows = print = true;
             run_continuous = false;
         } else if (long_opt == "--log-level" || (short_opt == 'l' && *short_opts == 'l' && ++short_opts)) {
+            // Set log level
             if (args.empty()) {
-                throw error{"Missing log level"};
+                throw_error("Missing log level");
             } else if (args.front() == "nothing") {
                 Logger::instance().set_log_level(Logger::Nothing);
             } else if (args.front() == "error") {
@@ -67,18 +90,22 @@ struct ArgParse
             } else if (args.front() == "debug") {
                 Logger::instance().set_log_level(Logger::Debug);
             } else {
-                throw error{"Unknown log level"};
+                throw_error("Unknown log level ", args.front());
             }
             args.pop_front();
+        } else if (long_opt == "--help-functions" || (short_opt == 'h' && *short_opts == 'f' && ++short_opts)) {
+            // Print available Lua functions and exit
+            print_functions = print = true;
+            run_continuous = false;
+        } else if (long_opt == "--help" || short_opt == 'h') {
+            // Print help and exit
+            print_help = true;
         } else {
-            std::string msg{"Unknown option "};
             if (!long_opt.empty()) {
-                msg.append(long_opt);
+                throw_error("Unknown option ", long_opt);
             } else {
-                msg.append("-");
-                msg.push_back(short_opt);
+                throw_error("Unknown option -", short_opt);
             }
-            throw error{msg.c_str()};
         }
     }
 
@@ -90,7 +117,7 @@ struct ArgParse
     void finalize()
     {
         if (!print && files.empty()) {
-            throw error{"No files specified"};
+            throw error{"No Lua script files specified"};
         }
 
         if (explicit_run_continuous && explicit_run_once) {
@@ -119,7 +146,7 @@ struct ArgParse
             args.pop_front();
 
             if (arg.empty()) {
-                throw error{"Empty argument"};
+                throw_error("Found empty command line argument");
             }
 
             if (arg[0] != '-') {
@@ -164,11 +191,11 @@ struct ArgParse
             << "\t--print-all-windows|-pa\n"
             << "\t\tPrint all windows. Implies --once unless --continous is also specified\n"
             << "\n"
-            << "\t--print-window-functions|-pf\n"
-            << "\t\tPrint all Lua functions available for each window and exit.\n"
-            << "\n"
             << "\t--help|-h\n"
             << "\t\tPrint this help text and exit\n"
+            << "\n"
+            << "\t--help-functions|-hf\n"
+            << "\t\tPrint Lua functions available for each window and exit.\n"
             << "\n"
             << "\n";
 
