@@ -1,6 +1,8 @@
 #ifndef INCLUDED_0C5D6352_8F57_43C5_93B6_CF2408A5B072
 #define INCLUDED_0C5D6352_8F57_43C5_93B6_CF2408A5B072
 
+#include "logger.h"
+
 #include <iostream>
 #include <stdexcept>
 
@@ -10,7 +12,7 @@
 #include <sstream>
 #include <vector>
 
-#include "lua.hpp"
+#include <lua.hpp>
 
 #define WNCK_I_KNOW_THIS_IS_UNSTABLE 1
 #include <libwnck/libwnck.h>
@@ -21,6 +23,7 @@ class WinCtl
 public:
     WinCtl()
     {
+        LOG_DEBUG("Initializing Lua");
         lua_ = luaL_newstate();
         luaL_openlibs(lua_);
 
@@ -32,11 +35,13 @@ public:
 
     ~WinCtl()
     {
+        LOG_DEBUG("Shutting down Lua");
         lua_close(lua_);
     }
 
     void add_file(const std::string & file)
     {
+        LOG_DEBUG("Loading Lua script from file " << file);
         int rc = luaL_loadfile(lua_, file.c_str());
         if (rc != 0) {
             throw std::runtime_error{lua_tostring(lua_, -1)};
@@ -55,6 +60,7 @@ public:
 
     void add_script(const std::string & script)
     {
+        LOG_DEBUG("Loading Lua script from string");
         int rc = luaL_loadstring(lua_, script.c_str());
         if (rc != 0) {
             throw std::runtime_error{lua_tostring(lua_, -1)};
@@ -65,6 +71,7 @@ public:
 
     void run_once()
     {
+        LOG_DEBUG("Processing existing windows once");
         WnckScreen * screen = wnck_screen_get_default();
         wnck_screen_force_update(screen);
         for (GList * ptr = wnck_screen_get_windows(screen); ptr != nullptr; ptr = ptr->next)
@@ -76,6 +83,7 @@ public:
 
     void run()
     {
+        LOG_DEBUG("Waiting for new windows");
         WnckScreen * screen = wnck_screen_get_default();
         wnck_screen_force_update(screen);
         g_signal_connect(wnck_screen_get(0), "window-opened", G_CALLBACK(on_window_opened), this);
@@ -86,6 +94,7 @@ public:
 
     void run_script(const std::string & script)
     {
+        LOG_DEBUG("Run script from string once");
         int rc = luaL_loadstring(lua_, script.c_str());
         if (rc != 0) {
             throw std::runtime_error{lua_tostring(lua_, -1)};
@@ -96,6 +105,52 @@ public:
             throw std::runtime_error{lua_tostring(lua_, -1)};
         }
     }
+
+    static void print_functions_and_exit()
+    {
+        std::cout <<"\tLua functions available for each window (e.g. window.maximized(), window.fullscreen(true))\n"
+            << "\n"
+            << "above:\n"
+            << "\tIs/Set window above other windows.\n"
+            << "\n"
+            << "application:\n"
+            << "\tGet application of the window.\n"
+            << "\n"
+            << "below:\n"
+            << "\tIs/Set window below other windows.\n"
+            << "\n"
+            << "fullscreen:\n"
+            << "\tIs/Set window fullscreen.\n"
+            << "\n"
+            << "maximized:\n"
+            << "\tIs/Set window maximized\n"
+            << "\n"
+            << "minimized:\n"
+            << "\tIs/Set window minimized\n"
+            << "\n"
+            << "pinned:\n"
+            << "\tIs/Set window visible on all workspaces\n"
+            << "\n"
+            << "pos:\n"
+            << "\tGet/Set window position (pos()/pos(x, y))\n"
+            << "\tWindow positions are specified in percentages of the work area.\n"
+            << "\n"
+            << "rect:\n"
+            << "\tGet/Set window rectangle (rect()/rect(x0, y0, x1, y1)) in percentages of the work area.\n"
+            << "\tWindow positions are specified in percentages of the work area.\n"
+            << "\n"
+            << "role:\n"
+            << "\tGet window role.\n"
+            << "\n"
+            << "title:\n"
+            << "\tGet window title.\n"
+            << "\n"
+            << "type:\n"
+            << "\tGet window type as string.\n"
+            << "\n";
+
+        std::exit(EXIT_SUCCESS);
+    };
 
 private:
     static const char * make_self_token()
@@ -147,6 +202,7 @@ private:
 
     static void on_window_opened(WnckScreen * screen, WnckWindow * window, gpointer data)
     {
+        LOG_INFO("New window opened on screen " << wnck_screen_get_number(screen));
         auto & self = *static_cast<WinCtl *> (data);
         self.call_chunks(window);
     }
@@ -166,6 +222,7 @@ private:
 
     void register_window_functions()
     {
+        LOG_DEBUG("Registering Lua functions");
         static luaL_Reg window_functions[] =
         {
             "above", above,

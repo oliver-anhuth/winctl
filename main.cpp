@@ -16,8 +16,7 @@ int main(int argc, char * argv[])
         if (arg_parse.print_help) {
             ArgParse::print_usage_and_exit();
         } else if (arg_parse.print_functions) {
-            WinCtl{}.run_script(LuaPrintAvailableFunctions);
-            std::exit(EXIT_SUCCESS);
+            WinCtl::print_functions_and_exit();
         }
 
         WinCtl winctl;

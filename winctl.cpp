@@ -281,6 +281,7 @@ int WinCtl::type(lua_State * lua)
 
 WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
 {
+    LOG_DEBUG("Calculating work area for screen " << wnck_screen_get_number(screen));
     int left = 0;
     int top = 0;
     int right = wnck_screen_get_width(screen) - 1;
@@ -289,6 +290,7 @@ WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
     bool finished = false;
     while (!finished) {
         finished = true;
+        LOG_DEBUG("Current work area: " << "rect(" << left << ", " << top << ", " << right << ", " << bottom << ")");
         for (GList * ptr = wnck_screen_get_windows(screen); ptr != nullptr; ptr = ptr->next)
         {
             WnckWindow * window = WNCK_WINDOW(ptr->data);
@@ -298,6 +300,7 @@ WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
                 wnck_window_get_geometry(window, &x1, &y1, &width, &height);
                 int x2 = x1 + width - 1;
                 int y2 = y1 + height - 1;
+                LOG_DEBUG("Found dock with rect(" << x1 << ", " << y1 << ", " << x2 << ", " << y2 << ")");
 
                 if (width >= height) {
                     if (y1 <= top && top <= y2) {
@@ -316,10 +319,14 @@ WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
                         finished = false;
                     }
                 }
+            } else if (type == WNCK_WINDOW_DESKTOP) {
+                LOG_DEBUG("Found desktop");
             }
         }
     }
 
+    LOG_INFO("Work area for screen " << wnck_screen_get_number(screen) << ": "
+        << "rect(" << left << ", " << top << ", " << right << ", " << bottom << ")");
     return WorkArea{
         static_cast<double> (left),
         static_cast<double> (top),
