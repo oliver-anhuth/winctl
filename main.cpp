@@ -15,6 +15,8 @@ int main(int argc, char * argv[])
 
         if (arg_parse.print_help) {
             ArgParse::print_usage_and_exit();
+        } else if (arg_parse.print_version) {
+            ArgParse::print_version_and_exit();
         } else if (arg_parse.print_functions) {
             WinCtl::print_functions_and_exit();
         }

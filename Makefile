@@ -2,6 +2,9 @@
 SOURCES = main.cpp logger.cpp winctl.cpp
 TARGET = winctl
 
+VERSION_MAJOR = 0
+VERSION_MINOR = 7
+
 # Check prerequisites
 ifeq ($(shell which ${CXX}),)
 $(error No C++ compiler found)
@@ -25,6 +28,7 @@ endif
 
 # Set up
 CXXFLAGS += -std=c++14 -Wall -O3
+CXXFLAGS += -DVERSION_MAJOR=${VERSION_MAJOR} -DVERSION_MINOR=${VERSION_MINOR}
 CXXFLAGS += $(shell pkg-config --cflags libwnck-3.0)
 CXXFLAGS += $(shell pkg-config --cflags gdk-3.0)
 CXXFLAGS += $(shell pkg-config --cflags lua)

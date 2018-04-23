@@ -20,6 +20,7 @@ struct ArgParse
 
     bool print = false;
     bool print_help = false;
+    bool print_version = false;
     bool print_functions = false;
     bool print_windows = false;
     bool print_all_windows = false;
@@ -79,6 +80,9 @@ struct ArgParse
         } else if (long_opt == "--help" || short_opt == 'h') {
             // Print help and exit
             print_help = print = true;
+        } else if (long_opt == "--version" || short_opt == 'V') {
+            // Print version and exit
+            print_version = print = true;
         }
 
         else {
@@ -180,7 +184,7 @@ struct ArgParse
 
     static void print_usage_and_exit()
     {
-        std::cout <<"\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages)\n"
+        std::cout << "\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages)\n"
             << "\n"
             << "SYNOPSIS\n"
             << "\twinctl [options]... [script_file]...\n"
@@ -206,6 +210,12 @@ struct ArgParse
             << "\t\tPrint Lua functions available for each window and exit.\n"
             << "\n"
             << "\n";
+        std::exit(EXIT_SUCCESS);
+    }
+
+    static void print_version_and_exit()
+    {
+        std::cout << "winctl " << VERSION_MAJOR << "." << VERSION_MINOR << "  Written by Oliver Anhuth\n";
         std::exit(EXIT_SUCCESS);
     };
 };

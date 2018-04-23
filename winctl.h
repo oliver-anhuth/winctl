@@ -108,7 +108,7 @@ public:
 
     static void print_functions_and_exit()
     {
-        std::cout <<"\tLua functions available for each window (e.g. window.title() or window.fullscreen(true)).\n"
+        std::cout << "\tLua functions available for each window (e.g. window.title() or window.fullscreen(true)).\n"
             << "\n"
             << "above:\n"
             << "\tIs/Set window above other windows (above(), above(true) or above(false)).\n"
