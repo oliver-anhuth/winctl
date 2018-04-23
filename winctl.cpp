@@ -208,19 +208,19 @@ int WinCtl::rect(lua_State * lua)
 
     int top = lua_gettop(lua);
     if (top > 0) {
-        double left = luaL_checknumber(lua, 1);
-        double top = luaL_checknumber(lua, 2);
-        double right = luaL_checknumber(lua, 3);
-        double bottom = luaL_checknumber(lua, 4);
+        double x0 = luaL_checknumber(lua, 1);
+        double y0 = luaL_checknumber(lua, 2);
+        double x1 = luaL_checknumber(lua, 3);
+        double y1 = luaL_checknumber(lua, 4);
         auto mask = WNCK_WINDOW_CHANGE_X | WNCK_WINDOW_CHANGE_Y | WNCK_WINDOW_CHANGE_WIDTH | WNCK_WINDOW_CHANGE_HEIGHT;
         wnck_window_set_geometry(
             window,
             WNCK_WINDOW_GRAVITY_STATIC,
             static_cast<WnckWindowMoveResizeMask> (mask),
-            work_area.left + left * (work_area.right - work_area.left) / 100.0,
-            work_area.top + top * (work_area.bottom - work_area.top) / 100.0,
-            (right - left) * (work_area.right - work_area.left + 1) / 100.0,
-            (bottom - top) * (work_area.bottom - work_area.top) / 100.0);
+            work_area.left + x0 * (work_area.right - work_area.left) / 100.0,
+            work_area.top + y0 * (work_area.bottom - work_area.top) / 100.0,
+            (x1 - x0) * (work_area.right - work_area.left + 1) / 100.0,
+            (y1 - y0) * (work_area.bottom - work_area.top) / 100.0);
         return 0;
     }
 
