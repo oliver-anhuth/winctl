@@ -325,8 +325,6 @@ WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
         }
     }
 
-    LOG_INFO("Work area for screen " << wnck_screen_get_number(screen) << ": "
-        << "rect(" << left << ", " << top << ", " << right << ", " << bottom << ")");
     return WorkArea{
         static_cast<double> (left),
         static_cast<double> (top),

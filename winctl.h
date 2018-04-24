@@ -108,7 +108,8 @@ public:
 
     static void print_functions_and_exit()
     {
-        std::cout << "\tLua functions available for each window (e.g. window.title() or window.fullscreen(true)).\n"
+        std::cout
+            << "\tLua functions available for each window (e.g. window.title() or window.fullscreen(true)).\n"
             << "\n"
             << "above:\n"
             << "\tIs/Set window above other windows (above(), above(true) or above(false)).\n"
@@ -259,7 +260,11 @@ private:
             WorkArea work_area = calculate_work_area(screen);
             iter = work_areas_.insert(std::make_pair(screen_number, work_area)).first;
         }
-        return iter->second;
+        const WorkArea & wa = iter->second;
+        LOG_INFO(
+            "Work area for screen " << wnck_screen_get_number(screen) << ": " <<
+            "rect(" << wa.left << ", " << wa.top << ", " << wa.right << ", " << wa.bottom << ")");
+        return wa;
     }
 
     WorkArea calculate_work_area(WnckScreen * screen);

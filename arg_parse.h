@@ -13,6 +13,12 @@
 #include <vector>
 
 
+#if !defined(VERSION_MAJOR)
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 0
+#endif
+
+
 struct ArgParse
 {
     bool run_once = true;
@@ -184,7 +190,8 @@ struct ArgParse
 
     static void print_usage_and_exit()
     {
-        std::cout << "\twinctl - Window matching utility (like devilspie2) which uses relative window positions (percentages)\n"
+        std::cout
+            << "\twinctl - Window layout utility (like devilspie2) which uses relative window positions (percentages)\n"
             << "\n"
             << "SYNOPSIS\n"
             << "\twinctl [options]... [script_file]...\n"
@@ -215,7 +222,10 @@ struct ArgParse
 
     static void print_version_and_exit()
     {
-        std::cout << "winctl " << VERSION_MAJOR << "." << VERSION_MINOR << "  Written by Oliver Anhuth\n";
+        std::cout
+            << "NAME=winctl\n"
+            << "VERSION=" << VERSION_MAJOR << "." << VERSION_MINOR << "\n"
+            << "AUTHOR=\"Oliver Anhuth\"\n";
         std::exit(EXIT_SUCCESS);
     };
 };
