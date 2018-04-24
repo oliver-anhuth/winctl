@@ -60,21 +60,4 @@ const char * LuaPrintAllWindows = R"lua(
     print()
 )lua";
 
-const char * LuaPrintAvailableFunctions = R"lua(
-    local names = {}
-    local count = 0;
-    for name, value in pairs(window) do
-        if type(value) == "function" then
-            count = count + 1
-            names[count] = name
-        end
-    end
-    table.sort(names)
-
-    print("Available functions for each window (e.g. window.".. names[1].. "()):")
-    for k, name in pairs(names) do
-        print("\t".. name)
-    end
-)lua";
-
 #endif // INCLUDED_F18555B8_0EA7_4FFF_87E5_02A626D15942
