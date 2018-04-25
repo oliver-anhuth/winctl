@@ -16,6 +16,7 @@
 #if !defined(VERSION_MAJOR)
 #define VERSION_MAJOR 0
 #define VERSION_MINOR 0
+#define VERSION_PATCH 0
 #endif
 
 
@@ -224,7 +225,7 @@ struct ArgParse
     {
         std::cout
             << "NAME=winctl\n"
-            << "VERSION=" << VERSION_MAJOR << "." << VERSION_MINOR << "\n"
+            << "VERSION=" << VERSION_MAJOR << "." << VERSION_MINOR << "." << VERSION_PATCH << "\n"
             << "AUTHOR=\"Oliver Anhuth\"\n";
         std::exit(EXIT_SUCCESS);
     };
