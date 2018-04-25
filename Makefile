@@ -4,6 +4,7 @@ TARGET = winctl
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 7
+VERSION_PATCH = 0
 
 # Check prerequisites
 ifeq ($(shell which ${CXX}),)
@@ -27,35 +28,47 @@ $(error No development package for lua found)
 endif
 
 # Set up
-CXXFLAGS += -std=c++14 -Wall -O3
-CXXFLAGS += -DVERSION_MAJOR=${VERSION_MAJOR} -DVERSION_MINOR=${VERSION_MINOR}
+BUILD_TYPE=Release
+
+CXXFLAGS += -std=c++14 -Wall
+CXXFLAGS += -DVERSION_MAJOR=${VERSION_MAJOR} -DVERSION_MINOR=${VERSION_MINOR} -DVERSION_PATCH=${VERSION_PATCH}
 CXXFLAGS += $(shell pkg-config --cflags libwnck-3.0)
 CXXFLAGS += $(shell pkg-config --cflags gdk-3.0)
 CXXFLAGS += $(shell pkg-config --cflags lua)
+
+ifeq (${BUILD_TYPE},$(filter ${BUILD_TYPE},Release rel))
+CXXFLAGS += -O3
+endif
+ifeq (${BUILD_TYPE},$(filter ${BUILD_TYPE},Debug dbg))
+CXXFLAGS += -g
+endif
 
 LDFLAGS += $(shell pkg-config --libs libwnck-3.0)
 LDFLAGS += $(shell pkg-config --libs gdk-3.0)
 LDFLAGS += $(shell pkg-config --libs lua)
 
-OBJS = $(patsubst %.cpp,%.o,${SOURCES})
-DEPS = $(patsubst %.cpp,%.o.dep,${SOURCES})
+OBJECT_FILES = $(patsubst %.cpp,%.o,${SOURCES})
+DEPENDENCIES = $(patsubst %.cpp,%.o.dep,${SOURCES})
+
+INSTALL_DIR = /usr
+INSTALL_PREFIX = local
 
 # Build rules
 .PHONY: all clean
 
 all: ${TARGET}
 
-${TARGET}: ${OBJS}
-	${CXX} -o $@ ${OBJS} ${LDFLAGS}
+${TARGET}: ${OBJECT_FILES}
+	${CXX} -o $@ ${OBJECT_FILES} ${LDFLAGS}
 
 .cpp.o: $(SOURCES)
 	${CXX} ${CXXFLAGS} -c $< -o $@
 	@${CXX} ${CXXFLAGS} -MP -MT $@ -MF $@.dep -MM $<
 
--include $(DEPS)
+-include $(DEPENDENCIES)
 
 clean:
 	-rm -f ${TARGET} *.o *.o.dep
 
 install:
-	install --mode u=rwx,g=rx,o=rx --preserve-timestamps ${TARGET} /usr/local/bin/${TARGET}
+	install --mode u=rwx,g=rx,o=rx --preserve-timestamps ${TARGET} ${INSTALL_DIR}/${INSTALL_PREFIX}/bin/${TARGET}
