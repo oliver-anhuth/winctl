@@ -4,7 +4,7 @@ TARGET = winctl
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 7
-VERSION_PATCH = 1
+VERSION_PATCH = 2
 
 # Check prerequisites
 ifeq ($(shell which ${CXX}),)
