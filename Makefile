@@ -4,7 +4,7 @@ TARGET = winctl
 
 VERSION_MAJOR = 0
 VERSION_MINOR = 7
-VERSION_PATCH = 0
+VERSION_PATCH = 1
 
 # Check prerequisites
 ifeq ($(shell which ${CXX}),)
@@ -36,7 +36,7 @@ CXXFLAGS += $(shell pkg-config --cflags libwnck-3.0)
 CXXFLAGS += $(shell pkg-config --cflags gdk-3.0)
 CXXFLAGS += $(shell pkg-config --cflags lua)
 
-ifeq (${BUILD_TYPE},$(filter ${BUILD_TYPE},Release rel))
+ifeq (${BUILD_TYPE},$(filter ${BUILD_TYPE},Release rel Optimized opt))
 CXXFLAGS += -O3
 endif
 ifeq (${BUILD_TYPE},$(filter ${BUILD_TYPE},Debug dbg))
@@ -50,8 +50,8 @@ LDFLAGS += $(shell pkg-config --libs lua)
 OBJECT_FILES = $(patsubst %.cpp,%.o,${SOURCES})
 DEPENDENCIES = $(patsubst %.cpp,%.o.dep,${SOURCES})
 
-INSTALL_DIR = /usr
-INSTALL_PREFIX = local
+# Install to /usr/local/bin/
+INSTALL_DIR = /usr/local
 
 # Build rules
 .PHONY: all clean
@@ -71,4 +71,4 @@ clean:
 	-rm -f ${TARGET} *.o *.o.dep
 
 install:
-	install --mode u=rwx,g=rx,o=rx --preserve-timestamps ${TARGET} ${INSTALL_DIR}/${INSTALL_PREFIX}/bin/${TARGET}
+	install --mode u=rwx,g=rx,o=rx --preserve-timestamps ${TARGET} ${INSTALL_DIR}/bin/${TARGET}
