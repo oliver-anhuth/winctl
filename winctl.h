@@ -148,6 +148,9 @@ public:
             << "\n"
             << "type:\n"
             << "\tGet window type as string.\n"
+            << "\n"
+            << "windowed:\n"
+            << "\tIs/Set window windowed (not fullscreen/mimimized/maximized).\n"
             << "\n";
         std::exit(EXIT_SUCCESS);
     };
@@ -219,6 +222,7 @@ private:
     static int role(lua_State * lua);
     static int title(lua_State * lua);
     static int type(lua_State * lua);
+    static int windowed(lua_State * lua);
 
     void register_window_functions()
     {
@@ -231,6 +235,7 @@ private:
             "fullscreen", fullscreen,
             "maximized", maximized,
             "minimized", minimized,
+            "windowed", windowed,
             "pinned", pinned,
             "pos", pos,
             "rect", rect,

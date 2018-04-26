@@ -279,6 +279,35 @@ int WinCtl::type(lua_State * lua)
     return 1;
 }
 
+int WinCtl::windowed(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+
+    int top = lua_gettop(lua);
+    if (top > 0) {
+        bool set_windowed = lua_toboolean(lua, 1);
+        if (set_windowed) {
+            timeval tv{0};
+            gettimeofday(&tv, nullptr);
+            wnck_window_set_fullscreen(window, false);
+            wnck_window_unminimize(window, tv.tv_sec);
+            wnck_window_unmaximize(window);
+        } else {
+            wnck_window_set_fullscreen(window, true);
+            wnck_window_minimize(window);
+            wnck_window_maximize(window);
+        }
+        return 0;
+    }
+
+    bool fullscreen = wnck_window_is_fullscreen(window);
+    bool minimized = wnck_window_is_minimized(window);
+    bool maximized = wnck_window_is_maximized(window);
+
+    lua_pushboolean(lua, !fullscreen && !minimized && !maximized);
+    return 1;
+}
+
 WinCtl::WorkArea WinCtl::calculate_work_area(WnckScreen * screen)
 {
     LOG_DEBUG("Calculating work area for screen " << wnck_screen_get_number(screen));
