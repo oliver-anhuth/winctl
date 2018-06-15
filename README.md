@@ -19,4 +19,9 @@ Execute Lua script for every existing window, then keep running and execute scri
 if window.type() == "normal" and window.application() == "Firefox" then
     window.maximized(true)
 end
+
+-- Make Google Chrome span 90% of the workspace area
+if window.type() == "normal" and string.match(application, "Google Chrome$") then
+    window.rect(1, 1, 91, 91)
+end
 ```
