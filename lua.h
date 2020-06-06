@@ -16,6 +16,7 @@ const char * LuaPrintNormalWindows = R"lua(
 
     if window.type() == "normal" or window.type() == "dialog" then
         print("if window.application() == \"".. window.application().. "\"")
+        print("    and window.title() == \"".. window.title().. "\"")
         print("    and window.type() == \"".. window.type().. "\"")
         print("then")
         if window.maximized() then
@@ -42,6 +43,7 @@ const char * LuaPrintAllWindows = R"lua(
     end
 
     print("if window.application() == \"".. window.application().. "\"")
+    print("    and window.title() == \"".. window.title().. "\"")
     print("    and window.type() == \"".. window.type().. "\"")
     print("then")
     if window.maximized() then
