@@ -44,7 +44,7 @@ struct ArgParse
             run_continuous = false;
             explicit_run_once = true;
         } else if (long_opt == "--continuous" || short_opt == 'c') {
-            // Run continously after startup
+            // Run continuously after startup
             run_once = false;
             explicit_run_continuous = true;
         }
@@ -199,17 +199,17 @@ struct ArgParse
             << "\n"
             << "OPTIONS:\n"
             << "\t--once|-o\n"
-            << "\t\tRun once ande exit, unless --continous is specified\n"
+            << "\t\tRun once and exit, unless --continuous is specified\n"
             << "\n"
             << "\t--continuous|-c\n"
-            << "\t\tRun continously and match newly opening windows.\n"
+            << "\t\tRun continuously and match newly opening windows.\n"
             << "\t\tDo not match existing windows at startup unless --once is also specified\n"
             << "\n"
             << "\t--print-windows|-p\n"
-            << "\t\tPrint normal and dialog windows. Implies --once unless --continous is also specified\n"
+            << "\t\tPrint normal and dialog windows. Implies --once unless --continuous is also specified\n"
             << "\n"
             << "\t--print-all-windows|-pa\n"
-            << "\t\tPrint all windows. Implies --once unless --continous is also specified\n"
+            << "\t\tPrint all windows. Implies --once unless --continuous is also specified\n"
             << "\n"
             << "\t--help|-h\n"
             << "\t\tPrint this help text and exit\n"
