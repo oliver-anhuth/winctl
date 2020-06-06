@@ -3,8 +3,8 @@ SOURCES = main.cpp logger.cpp winctl.cpp
 TARGET = winctl
 
 VERSION_MAJOR = 0
-VERSION_MINOR = 7
-VERSION_PATCH = 2
+VERSION_MINOR = 8
+VERSION_PATCH = 0
 
 # Check prerequisites
 ifeq ($(shell which ${CXX}),)
