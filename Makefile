@@ -61,7 +61,9 @@ all: ${TARGET}
 ${TARGET}: ${OBJECT_FILES}
 	${CXX} -o $@ ${OBJECT_FILES} ${LDFLAGS}
 
-.cpp.o: $(SOURCES)
+${OBJECT_FILES}: $(SOURCES)
+
+%.o: %.cpp
 	${CXX} ${CXXFLAGS} -c $< -o $@
 	@${CXX} ${CXXFLAGS} -MP -MT $@ -MF $@.dep -MM $<
 
