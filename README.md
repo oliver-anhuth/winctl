@@ -13,6 +13,10 @@ Make sure to meet the requirements: Core utilities, Make, C++ compiler, pkg-conf
 
 Execute Lua script for every existing window, then keep running and execute script for every new window.
 
+> winctl --print-windows
+
+Execute once and print code to restore all open windows to their current position.
+
 # Example script
 ```Lua
 -- Make Firefox maximized
