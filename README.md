@@ -17,6 +17,14 @@ Execute Lua script for every existing window, then keep running and execute scri
 
 Execute once and print code to restore all open windows to their current position.
 
+> winctl --help
+
+List available options.
+
+> winctl --help-functions
+
+List available Lua functions for each window.
+
 # Example script
 ```Lua
 -- Make Firefox maximized
