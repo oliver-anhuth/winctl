@@ -137,6 +137,15 @@ int WinCtl::minimized(lua_State * lua)
     return 1;
 }
 
+int WinCtl::close(lua_State * lua)
+{
+    WnckWindow * window = get_window(lua);
+
+    wnck_window_close(window, 0);
+
+    return 1;
+}
+
 int WinCtl::pinned(lua_State * lua)
 {
     WnckWindow * window = get_window(lua);
