@@ -129,6 +129,9 @@ public:
             << "minimized:\n"
             << "\tIs/Set window minimized.\n"
             << "\n"
+            << "close:\n"
+            << "\tClose the window.\n"
+            << "\n"
             << "pinned:\n"
             << "\tIs/Set window visible on all workspaces.\n"
             << "\n"
@@ -216,6 +219,7 @@ private:
     static int fullscreen(lua_State * lua);
     static int maximized(lua_State * lua);
     static int minimized(lua_State * lua);
+    static int close(lua_State * lua);
     static int pinned(lua_State * lua);
     static int pos(lua_State * lua);
     static int rect(lua_State * lua);
@@ -235,6 +239,7 @@ private:
             "fullscreen", fullscreen,
             "maximized", maximized,
             "minimized", minimized,
+            "close", close,
             "windowed", windowed,
             "pinned", pinned,
             "pos", pos,
